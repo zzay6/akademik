@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model detail_nilai {
+  kode_jadwal    String? @db.Char(5)
+  kode_nilai     String? @db.Char(5)
+  nilai_tugas    Int?
+  nilai_formatif Int?
+  nilai_uts      Int?
+  nilai_uas      Int?
+  nilai_akhir    Int?
+  nilai_huruf    String? @db.Char(1)
+  jadwal         jadwal? @relation(fields: [kode_jadwal], references: [kode_jadwal], onDelete: Restrict, onUpdate: Restrict, map: "detail_nilai_ibfk_1")
+  nilai          nilai?  @relation(fields: [kode_nilai], references: [kode_nilai], onDelete: Restrict, onUpdate: Restrict, map: "detail_nilai_ibfk_2")
+
+  @@index([kode_jadwal], map: "kode_jadwal")
+  @@index([kode_nilai], map: "kode_nilai")
+  @@ignore
+}
+
+model dosen {
+  nama                       String    @db.VarChar(20)
+  nidn                       String    @id @db.Char(10)
+  id_pengguna                Int?
+  pengguna                   pengguna? @relation(fields: [id_pengguna], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_dosen_pengguna")
+  jadwal_jadwal_dosenTodosen jadwal[]  @relation("jadwal_dosenTodosen")
+
+  @@index([id_pengguna], map: "fk_dosen_pengguna")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model informasi {
+  subject   String   @db.VarChar(20)
+  informasi String   @db.Text
+  waktu     DateTime @default(now()) @db.Timestamp(0)
+
+  @@ignore
+}
+
+model jadwal {
+  kode_jadwal                                 String         @id @unique(map: "kode") @db.Char(5)
+  kelas                                       String         @db.Char(10)
+  jam                                         String         @db.Char(5)
+  hari                                        String         @db.Char(6)
+  mata_kuliah                                 String         @db.Char(5)
+  ruang                                       String         @db.Char(5)
+  dosen                                       String         @db.Char(10)
+  detail_nilai                                detail_nilai[] @ignore
+  mata_kuliah_jadwal_mata_kuliahTomata_kuliah mata_kuliah    @relation("jadwal_mata_kuliahTomata_kuliah", fields: [mata_kuliah], references: [kode_mata_kuliah], onUpdate: Restrict, map: "jadwal_ibfk_1")
+  ruang_jadwal_ruangToruang                   ruang          @relation("jadwal_ruangToruang", fields: [ruang], references: [kode_ruang], onUpdate: Restrict, map: "jadwal_ibfk_2")
+  dosen_jadwal_dosenTodosen                   dosen          @relation("jadwal_dosenTodosen", fields: [dosen], references: [nidn], onUpdate: Restrict, map: "jadwal_ibfk_3")
+
+  @@index([dosen], map: "dosen")
+  @@index([mata_kuliah], map: "mata_kuliah")
+  @@index([ruang], map: "ruang")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model kelas {
+  nama_kelas String @db.VarChar(10) @unique
+  kode_prodi String @db.VarChar(5)
+  nidn       String @db.Char(10) 
+  prodi      prodi  @relation(fields: [kode_prodi], references: [kode_prodi], onUpdate: Restrict, map: "kelas_ibfk_2")
+
+  @@index([nidn], map: "NIDN")
+  @@index([kode_prodi], map: "prodi")
+  @@ignore
+}
+
+model mahasiswa {
+  nama_mahasiswa String    @db.VarChar(10)
+  nim            String    @id @db.Char(10) @unique
+  nama_kelas     String    @db.VarChar(10)
+  id_pengguna    Int?
+  pengguna       pengguna? @relation(fields: [id_pengguna], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_mahasiswa_pengguna")
+  nilai          nilai[]
+
+  @@index([id_pengguna], map: "fk_mahasiswa_pengguna")
+}
+
+model mata_kuliah {
+  nama                                   String   @db.VarChar(20)
+  kode_mata_kuliah                       String   @id @db.Char(5)
+  sks                                    Int
+  jadwal_jadwal_mata_kuliahTomata_kuliah jadwal[] @relation("jadwal_mata_kuliahTomata_kuliah")
+}
+
+model nilai {
+  kode_nilai   String         @id @unique(map: "kode") @db.Char(5)
+  nim          String         @db.Char(10)
+  semester     String         @db.Char(2)
+  ipk          String         @db.Char(1)
+  detail_nilai detail_nilai[] @ignore
+  mahasiswa    mahasiswa      @relation(fields: [nim], references: [nim], onUpdate: Restrict, map: "nilai_ibfk_1")
+
+  @@index([nim], map: "nim")
+}
+
+model pengguna {
+  id        Int         @id @unique
+  password  String      @db.VarChar(10)
+  role      String?     @db.VarChar(10)
+  dosen     dosen[]
+  mahasiswa mahasiswa[]
+}
+
+model prodi {
+  kode_prodi String  @id @db.Char(5)
+  nama_prodi String  @db.VarChar(20)
+  kelas      kelas[] @ignore
+}
+
+model ruang {
+  kode_ruang                 String   @id @db.Char(5)
+  nama_ruang                 String   @db.VarChar(10)
+  jadwal_jadwal_ruangToruang jadwal[] @relation("jadwal_ruangToruang")
+}
