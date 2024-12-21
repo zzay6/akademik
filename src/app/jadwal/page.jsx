@@ -1,11 +1,19 @@
-const { App } = require("@/layout/app");
+import { App } from "@/layout/app";
+import getClass from "@/lib/get-class";
+import getRoom from "@/lib/get-room";
+import Link from "next/link";
 
-const Jadwal = () => {
+const Jadwal = async () => {
+  const kelas = await getClass();
+  const room = await getRoom();
+
   return (
     <App>
       <div className="w-full max-w-md p-4">
         <div className="flex items-center mb-4">
-          <i className="fas fa-arrow-left text-xl"></i>
+          <Link href={"/"}>
+            <i className="fas fa-arrow-left text-xl"></i>
+          </Link>
         </div>
         <h1 className="text-4xl font-bold mb-4">Jadwal</h1>
         <table className="w-full border-collapse border border-gray-400">
@@ -14,27 +22,41 @@ const Jadwal = () => {
               <th className="border border-gray-400 px-2 py-1">No</th>
               <th className="border border-gray-400 px-2 py-1">Mata Kuliah</th>
               <th className="border border-gray-400 px-2 py-1">Jam</th>
+              <th className="border border-gray-400 px-2 py-1">Hari</th>
               <th className="border border-gray-400 px-2 py-1">Ruang</th>
               <th className="border border-gray-400 px-2 py-1">Dosen</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border border-gray-400 px-2 py-1">1</td>
-              <td className="border border-gray-400 px-2 py-1">Basis Data</td>
-              <td className="border border-gray-400 px-2 py-1">18.00-19.40</td>
-              <td className="border border-gray-400 px-2 py-1">LAB B</td>
-              <td className="border border-gray-400 px-2 py-1">Nofi Cahyono</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 px-2 py-1">2</td>
-              <td className="border border-gray-400 px-2 py-1">
-                Algoritma Pemograman
-              </td>
-              <td className="border border-gray-400 px-2 py-1">20.00-22.00</td>
-              <td className="border border-gray-400 px-2 py-1">LAB D</td>
-              <td className="border border-gray-400 px-2 py-1">Pramana</td>
-            </tr>
+            {kelas.jadwal.map((candidate, i) => {
+              const mata_kuliah = kelas.mata_kuliah.find(
+                (matkul) => matkul.kode_mata_kuliah == candidate.mata_kuliah
+              );
+
+              return (
+                <tr key={i}>
+                  <td className="border border-gray-400 px-2 py-1">{i + 1}</td>
+                  <td className="border border-gray-400 px-2 py-1">
+                    {mata_kuliah.nama}
+                  </td>
+                  <td className="border border-gray-400 px-2 py-1">
+                    {candidate.jam}
+                  </td>
+                  <td className="border border-gray-400 px-2 py-1">
+                    {candidate.hari}
+                  </td>
+                  <td className="border border-gray-400 px-2 py-1">
+                    {
+                      room.find((r) => r.kode_ruang == candidate.ruang)
+                        .nama_ruang
+                    }
+                  </td>
+                  <td className="border border-gray-400 px-2 py-1">
+                    {mata_kuliah.dosen.nama}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

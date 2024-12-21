@@ -62,21 +62,19 @@ model jadwal {
   @@index([ruang], map: "ruang")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model kelas {
-  nama_kelas String @db.VarChar(10) @unique
+  nama_kelas String @id @unique(map: "nama_kelas") @db.VarChar(10)
   kode_prodi String @db.VarChar(5)
-  nidn       String @db.Char(10) 
-  prodi      prodi  @relation(fields: [kode_prodi], references: [kode_prodi], onUpdate: Restrict, map: "kelas_ibfk_2")
+  nidn       String @db.Char(10)
+  prodi      prodi  @relation(fields: [kode_prodi], references: [kode_prodi], onUpdate: Restrict, map: "FK_kode_prodi")
 
+  @@index([kode_prodi], map: "FK_kode_prodi")
   @@index([nidn], map: "NIDN")
-  @@index([kode_prodi], map: "prodi")
-  @@ignore
 }
 
 model mahasiswa {
   nama_mahasiswa String    @db.VarChar(10)
-  nim            String    @id @db.Char(10) @unique
+  nim            String    @id @db.Char(10)
   nama_kelas     String    @db.VarChar(10)
   id_pengguna    Int?
   pengguna       pengguna? @relation(fields: [id_pengguna], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_mahasiswa_pengguna")
@@ -104,8 +102,8 @@ model nilai {
 }
 
 model pengguna {
-  id        Int         @id @unique
-  password  String      @db.VarChar(10)
+  id        Int         @id @default(autoincrement())
+  password  String?     @db.VarChar(100)
   role      String?     @db.VarChar(10)
   dosen     dosen[]
   mahasiswa mahasiswa[]
@@ -114,7 +112,7 @@ model pengguna {
 model prodi {
   kode_prodi String  @id @db.Char(5)
   nama_prodi String  @db.VarChar(20)
-  kelas      kelas[] @ignore
+  kelas      kelas[]
 }
 
 model ruang {

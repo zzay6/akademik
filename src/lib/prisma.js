@@ -1,10 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-// import prismaAccelerate from '@prisma/accelerate';
-
-// prismaAccelerate()
-
 export const config = {
-  runtime: "nodejs", // Gunakan Node.js runtime
+  runtime: "nodejs",
 };
 
 const prisma = global.prisma || new PrismaClient();

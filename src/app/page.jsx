@@ -1,7 +1,10 @@
-"use server";
 import { App } from "@/layout/app";
+import { getClass } from "@/lib/get-class";
+import Link from "next/link";
 
 const Home = async () => {
+  const kelas = await getClass();
+
   return (
     <App>
       <div className="p-4">
@@ -12,24 +15,21 @@ const Home = async () => {
         />
       </div>
       <div className="p-4 space-y-4 text-black">
-        <div className="bg-purple-200 rounded-lg p-4 flex items-center">
-          <div className="flex-1">
-            <p className="font-bold">Basis Data TI SE 24 M</p>
-            <p className="">Nofi Cahyono</p>
-          </div>
-          <div className="bg-purple-600 rounded-full w-12 h-12 flex items-center justify-center text-xl">
-            N
-          </div>
-        </div>
-        <div className="bg-purple-200 rounded-lg p-4 flex items-center">
-          <div className="flex-1">
-            <p className="font-bold">Algoritma Pemrograman TI SE 24 M</p>
-            <p className="">Pramana</p>
-          </div>
-          <div className="bg-purple-600 rounded-full w-12 h-12 flex items-center justify-center text-xl">
-            P
-          </div>
-        </div>
+        {kelas.mata_kuliah.map((matkul, i) => (
+          <Link
+            href={"/kelas/" + matkul.kode_mata_kuliah}
+            key={i}
+            className="bg-purple-200 rounded-lg p-4 flex items-center block"
+          >
+            <div className="flex-1">
+              <p className="font-bold">{matkul?.nama}</p>
+              <p className="">{matkul?.dosen?.nama}</p>
+            </div>
+            <div className="bg-purple-600 rounded-full w-12 h-12 flex items-center justify-center text-xl">
+              {matkul?.dosen?.nama.split("")[0]}
+            </div>
+          </Link>
+        ))}
       </div>
     </App>
   );

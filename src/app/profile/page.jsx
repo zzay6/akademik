@@ -1,5 +1,6 @@
 "use client";
 import { App } from "@/layout/app";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const Profile = () => {
@@ -7,14 +8,12 @@ const Profile = () => {
   return (
     <App>
       <div className="flex flex-col items-center w-full px-4 space-y-4 mt-8">
-        <button className="w-full bg-gray-200 p-4 rounded-lg text-black flex items-center">
-          <i className="fas fa-user text-xl mr-4"></i>
-          <span className="text-lg">Data Diri</span>
-        </button>
-        <button className="w-full bg-gray-200 p-4 rounded-lg text-black flex items-center">
-          <i className="fas fa-users text-xl mr-4"></i>
-          <span className="text-lg">Data Orang Tua</span>
-        </button>
+        <Link href={"/profile/biodata"} className="w-full">
+          <button className="w-full bg-gray-200 p-4 rounded-lg text-black flex items-center">
+            <i className="fas fa-user text-xl mr-4"></i>
+            <span className="text-lg">Data Diri</span>
+          </button>
+        </Link>
         <button className="w-full bg-gray-200 p-4 rounded-lg text-black flex items-center">
           <i className="fas fa-key text-xl mr-4"></i>
           <span className="text-lg">Password</span>
