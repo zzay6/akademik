@@ -1,15 +1,16 @@
 import { App } from "@/layout/app";
-import getUser from "@/lib/get-user";
+import { getUser } from "@/lib/get-user";
 import Link from "next/link";
 
 const Biodata = async () => {
   const user = await getUser();
 
-  let program
+  let program;
 
-  if(user?.mahasiswa?.nama_kelas?.split(' ')[3] == 'P') program = 'Regular'
-  if(user?.mahasiswa?.nama_kelas?.split(' ')[3] == 'M') program = 'Non Regular'
-  if(user?.mahasiswa?.nama_kelas?.split(' ')[3] == 'SH') program = 'Shif'
+  if (user?.mahasiswa?.nama_kelas?.split(" ")[3] == "P") program = "Regular";
+  if (user?.mahasiswa?.nama_kelas?.split(" ")[3] == "M")
+    program = "Non Regular";
+  if (user?.mahasiswa?.nama_kelas?.split(" ")[3] == "SH") program = "Shif";
 
   return (
     <App>
@@ -30,15 +31,17 @@ const Biodata = async () => {
 
             <span>NIM</span>
             <span className="text-center">:</span>
-            <span className="text-right">{user?.mahasiswa?.nim || '-'}</span>
+            <span className="text-right">{user?.mahasiswa?.nim || "-"}</span>
 
             <span>Kelas</span>
             <span className="text-center">:</span>
-            <span className="text-right">{user?.mahasiswa?.nama_kelas || '-'}</span>
+            <span className="text-right">
+              {user?.mahasiswa?.nama_kelas || "-"}
+            </span>
 
             <span>Program Studi</span>
             <span className="text-center">:</span>
-            <span className="text-right">{user?.prodi?.nama_prodi || '-'}</span>
+            <span className="text-right">{user?.prodi?.nama_prodi || "-"}</span>
 
             <span>Program Kuliah</span>
             <span className="text-center">:</span>

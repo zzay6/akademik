@@ -44,6 +44,6 @@ export const findClass = async () => {
       nama_kelas: kelas.nama_kelas,
     },
   });
-  console.log(kelas);
+  
   return kelas;
 };

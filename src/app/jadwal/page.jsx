@@ -1,6 +1,6 @@
 import { App } from "@/layout/app";
-import getClass from "@/lib/get-class";
-import getRoom from "@/lib/get-room";
+import { getClass } from "@/lib/get-class";
+import { getRoom } from "@/lib/get-room";
 import Link from "next/link";
 
 const Jadwal = async () => {
