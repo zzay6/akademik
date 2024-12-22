@@ -24,7 +24,7 @@ export const getClass = async () => {
       const matkul = candidate;
       matkul.dosen = await prisma.dosen.findFirst({
         where: {
-          nidn: jadwal.find((j) => j.dosen === candidate.dosen)?.dosen,
+          nidn: jadwal.find((j) => j.mata_kuliah === candidate.kode_mata_kuliah)?.dosen,
         },
       });
       return matkul;
