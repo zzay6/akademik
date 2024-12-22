@@ -1,7 +1,20 @@
+"use client";
 import { App } from "@/layout/app";
+import { getApiInformasi } from "@/lib/api/informasi";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const Informasi = () => {
+  const [informasi, setInformasi] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const getInformasi = await getApiInformasi();
+      console.log(getInformasi);
+      setInformasi(getInformasi);
+    })();
+  }, []);
+
   return (
     <App>
       <div className="p-4">
@@ -24,26 +37,17 @@ const Informasi = () => {
           <i className="fas fa-filter text-xl ml-4"></i>
         </div>
         <div className="space-y-4">
-          <div className="p-4 border rounded-lg flex justify-between items-center">
-            <div>
-              <p className="font-bold">1. Basis Data</p>
-              <p>Pertemuan 3</p>
-              <a href="#" className="text-blue-500">
-                Lihat nilai
-              </a>
+          {informasi.map((info, i) => (
+            <div className="p-4 border rounded-lg" key={i}>
+              <div>
+                <div className="flex justify-between">
+                  <p className="font-bold">{info.subject}</p>
+                  <p className="text-gray-500">15 maret 2024</p>
+                </div>
+                <p className="mt-3">{info.informasi}</p>
+              </div>
             </div>
-            <p className="text-gray-500">15 maret 2024</p>
-          </div>
-          <div className="p-4 border rounded-lg flex justify-between items-center">
-            <div>
-              <p className="font-bold">2. Algoritma Pemograman</p>
-              <p>Pertemuan 3</p>
-              <a href="#" className="text-blue-500">
-                Lihat nilai
-              </a>
-            </div>
-            <p className="text-gray-500">16 maret 2024</p>
-          </div>
+          ))}
         </div>
       </div>
     </App>

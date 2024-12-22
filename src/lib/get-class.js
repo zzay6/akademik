@@ -3,12 +3,19 @@ import { getUser } from "./get-user";
 
 export const getClass = async () => {
   const user = await getUser();
-  const kelas = user.kelas;
-  const jadwal = await prisma?.jadwal?.findMany({
-    where: {
-      kelas: kelas.nama_kelas,
-    },
-  });
+  const kelas = user.kelas || {};
+  const jadwal =
+    user.role == "mahasiswa"
+      ? await prisma?.jadwal?.findMany({
+          where: {
+            kelas: kelas.nama_kelas,
+          },
+        })
+      : await prisma?.jadwal?.findMany({
+          where: {
+            dosen: user.dosen.nidn,
+          },
+        });
 
   kelas.jadwal = jadwal;
   const mata_kuliah = await prisma.mata_kuliah.findMany({
@@ -24,7 +31,8 @@ export const getClass = async () => {
       const matkul = candidate;
       matkul.dosen = await prisma.dosen.findFirst({
         where: {
-          nidn: jadwal.find((j) => j.mata_kuliah === candidate.kode_mata_kuliah)?.dosen,
+          nidn: jadwal.find((j) => j.mata_kuliah === candidate.kode_mata_kuliah)
+            ?.dosen,
         },
       });
       return matkul;
@@ -38,12 +46,17 @@ export const getClass = async () => {
 
 export const findClass = async () => {
   const user = await getUser();
-  const kelas = user.kelas;
-  kelas.mahasiswa = await prisma.mahasiswa.findMany({
-    where: {
-      nama_kelas: kelas.nama_kelas,
-    },
-  });
-  
+  let kelas;
+
+  if (user.role == "mahasiswa") {
+    kelas = user.kelas;
+    kelas.mahasiswa = await prisma.mahasiswa.findMany({
+      where: {
+        nama_kelas: kelas.nama_kelas,
+      },
+    });
+  } else {
+  }
+
   return kelas;
 };

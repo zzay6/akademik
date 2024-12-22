@@ -34,13 +34,11 @@ model dosen {
   @@index([id_pengguna], map: "fk_dosen_pengguna")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model informasi {
   subject   String   @db.VarChar(20)
   informasi String   @db.Text
   waktu     DateTime @default(now()) @db.Timestamp(0)
-
-  @@ignore
+  id        Int      @id @default(autoincrement())
 }
 
 model jadwal {
