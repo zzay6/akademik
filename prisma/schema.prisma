@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model detail_nilai {
   kode_jadwal    String? @db.Char(5)
   kode_nilai     String? @db.Char(5)
@@ -17,12 +16,12 @@ model detail_nilai {
   nilai_uas      Int?
   nilai_akhir    Int?
   nilai_huruf    String? @db.Char(1)
+  id             Int     @unique(map: "id") @default(autoincrement())
   jadwal         jadwal? @relation(fields: [kode_jadwal], references: [kode_jadwal], onDelete: Restrict, onUpdate: Restrict, map: "detail_nilai_ibfk_1")
   nilai          nilai?  @relation(fields: [kode_nilai], references: [kode_nilai], onDelete: Restrict, onUpdate: Restrict, map: "detail_nilai_ibfk_2")
 
   @@index([kode_jadwal], map: "kode_jadwal")
   @@index([kode_nilai], map: "kode_nilai")
-  @@ignore
 }
 
 model dosen {
@@ -52,7 +51,7 @@ model jadwal {
   mata_kuliah                                 String         @db.Char(5)
   ruang                                       String         @db.Char(5)
   dosen                                       String         @db.Char(10)
-  detail_nilai                                detail_nilai[] @ignore
+  detail_nilai                                detail_nilai[]
   mata_kuliah_jadwal_mata_kuliahTomata_kuliah mata_kuliah    @relation("jadwal_mata_kuliahTomata_kuliah", fields: [mata_kuliah], references: [kode_mata_kuliah], onUpdate: Restrict, map: "jadwal_ibfk_1")
   ruang_jadwal_ruangToruang                   ruang          @relation("jadwal_ruangToruang", fields: [ruang], references: [kode_ruang], onUpdate: Restrict, map: "jadwal_ibfk_2")
   dosen_jadwal_dosenTodosen                   dosen          @relation("jadwal_dosenTodosen", fields: [dosen], references: [nidn], onUpdate: Restrict, map: "jadwal_ibfk_3")
@@ -95,7 +94,7 @@ model nilai {
   nim          String         @db.Char(10)
   semester     String         @db.Char(2)
   ipk          String         @db.Char(1)
-  detail_nilai detail_nilai[] @ignore
+  detail_nilai detail_nilai[]
   mahasiswa    mahasiswa      @relation(fields: [nim], references: [nim], onUpdate: Restrict, map: "nilai_ibfk_1")
 
   @@index([nim], map: "nim")

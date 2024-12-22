@@ -8,11 +8,11 @@ export const App = ({ children, hideTopBar }) => {
   const [user, setUser] = useState({});
 
   useEffect((e) => {
-    setUser(JSON.parse(localStorage.getItem("user") ?? "null"));
+    setUser(JSON.parse(localStorage.getItem("user") || "{}") || {});
 
     const fetchUser = async () => {
       const result = await getApiUser();
-      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("user", JSON.stringify(result.user || {}));
       setUser(result.user);
     };
     if (!hideTopBar) fetchUser();
