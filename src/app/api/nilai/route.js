@@ -44,3 +44,67 @@ export async function GET(req) {
 
   return NextResponse.json({ nilai: nilai_new });
 }
+
+export async function POST(req) {
+  const {
+    nim,
+    kode_jadwal,
+    semester,
+    nilai_formatif,
+    nilai_tugas,
+    nilai_uts,
+    nilai_uas,
+  } = await req.json();
+  const lastNilai = await prisma.nilai.findFirst({
+    orderBy: {
+      kode_nilai: "desc",
+    },
+  });
+
+  let kode_nilai = "KN001";
+  if (lastNilai) {
+    const lastNumber = parseInt(lastNilai.kode_nilai.replace("KN", ""), 10);
+
+    const newNumber = lastNumber + 1;
+
+    kode_nilai = `KN${newNumber.toString().padStart(3, "0")}`;
+  }
+
+  // const nilai_akhir =
+  //   (nilai_formatif + nilai_tugas + nilai_uts + nilai_uas) / 4;
+
+  // let nilai_huruf = "E";
+  // if (nilai_akhir >= 80) nilai_huruf = "A";
+  // if (nilai_akhir >= 70) nilai_huruf = "B";
+  // if (nilai_akhir >= 60) nilai_huruf = "C";
+  // if (nilai_akhir >= 50) nilai_huruf = "D";
+  const data = {
+    semester,
+    kode_nilai,
+    nim: nim,
+    ipk: "E",
+    mahasiswa: {
+      connect: { nim },
+    },
+    detail_nilai: {
+      create: [
+        {
+          kode_nilai,
+          kode_jadwal,
+          nilai_formatif,
+          nilai_tugas,
+          nilai_uts,
+          nilai_uas,
+          nilai_akhir: null,
+          nilai_huruf: null,
+        },
+      ],
+    },
+  };
+
+  const nilai = await prisma.nilai.create({
+    data,
+  });
+
+  return NextResponse.json({ nilai });
+}

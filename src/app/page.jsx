@@ -5,6 +5,8 @@ import Link from "next/link";
 const Home = async () => {
   const kelas = await getClass();
 
+  console.log(kelas);
+
   return (
     <App>
       <div className="p-4">
@@ -17,7 +19,12 @@ const Home = async () => {
       <div className="p-4 space-y-4 text-black">
         {kelas.mata_kuliah.map((matkul, i) => (
           <Link
-            href={"/kelas/" + matkul.kode_mata_kuliah}
+            href={
+              "/kelas/" +
+              kelas.jadwal.find(
+                (candidate) => candidate.mata_kuliah === matkul.kode_mata_kuliah
+              ).kode_jadwal
+            }
             key={i}
             className="bg-purple-200 rounded-lg p-4 flex items-center block"
           >

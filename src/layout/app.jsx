@@ -24,6 +24,7 @@ export const App = ({ children, hideTopBar }) => {
         maxWidth: "430px",
         margin: "auto",
         minHeight: "100vh",
+        paddingBottom: '70px'
       }}
       className="bg-gray-50 text-black"
     >

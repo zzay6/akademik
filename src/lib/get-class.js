@@ -44,7 +44,7 @@ export const getClass = async () => {
   return kelas;
 };
 
-export const findClass = async () => {
+export const findClass = async (kode) => {
   const user = await getUser();
   let kelas;
 
@@ -56,6 +56,17 @@ export const findClass = async () => {
       },
     });
   } else {
+    kelas = {};
+    const jadwal = await prisma.jadwal.findFirst({
+      where: {
+        kode_jadwal: kode,
+      },
+    });
+    kelas.mahasiswa = await prisma.mahasiswa.findMany({
+      where: {
+        nama_kelas: jadwal.kel,
+      },
+    });
   }
 
   return kelas;

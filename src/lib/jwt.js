@@ -7,8 +7,6 @@ export const decode = async () => {
   const cookie = await cookies();
   const token = cookie.get("token")?.value;
 
-  console.log(token);
-
   const decoded = await jwtVerify(token, new TextEncoder().encode(secretKey));
 
   return decoded;

@@ -4,7 +4,7 @@ export const Navbar = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0">
       <div
-        className="bg-white border-t border-gray-300 flex justify-around p-2 text-black"
+        className="bg-white border-t border-gray-100 flex justify-around p-2 text-black"
         style={{
           maxWidth: "430px",
           margin: "auto",

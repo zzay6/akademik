@@ -1,8 +1,10 @@
 import { App } from "@/layout/app";
 import { findClass } from "@/lib/get-class";
+import { getUser } from "@/lib/get-user";
 import Link from "next/link";
 
 const Mahasiswa = async ({ params }) => {
+  const user = await getUser();
   const kelas = await findClass();
 
   return (
@@ -21,9 +23,14 @@ const Mahasiswa = async ({ params }) => {
               key={i}
             >
               <span>{mhs.nama_mahasiswa}</span>
-              <button className="bg-pink-600 text-white px-4 py-2 rounded-full">
-                Input Nilai
-              </button>
+              {user.role == "dosen" && (
+                <Link
+                  href={params.kode + "/input-nilai/" + mhs.nim}
+                  className="bg-pink-600 text-white px-4 py-2 rounded-full"
+                >
+                  Input Nilai
+                </Link>
+              )}
             </div>
           ))}
         </div>

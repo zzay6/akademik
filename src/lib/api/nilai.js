@@ -12,3 +12,8 @@ export const getApiNilai = async () => {
   const data = result.data.nilai;
   return data;
 };
+
+export const storeApiNilai = async (formData) => {
+  const result = await axios.post("/api/nilai", formData);
+  console.log(result);
+};
