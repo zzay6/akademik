@@ -25,10 +25,10 @@ const Mahasiswa = async ({ params }) => {
               <span>{mhs.nama_mahasiswa}</span>
               {user.role == "dosen" && (
                 <Link
-                  href={params.kode + "/input-nilai/" + mhs.nim}
-                  className="bg-pink-600 text-white px-4 py-2 rounded-full"
+                  href={params?.kode + "/nilai?nim=" + mhs?.nim}
+                  className="bg-pink-600 text-white px-4 py-2 rounded-full text-sm"
                 >
-                  Input Nilai
+                  Nilai
                 </Link>
               )}
             </div>

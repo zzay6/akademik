@@ -3,19 +3,22 @@ import { App } from "@/layout/app";
 import { findApiMahasiswa } from "@/lib/api/mahasiswa";
 import { storeApiNilai } from "@/lib/api/nilai";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const InputNilai = ({ params }) => {
-  const resolvedParams = use(params);
+const InputNilai = () => {
+  const { kode } = useParams();
+  const params = useSearchParams();
+  const nim = params.get("nim");
   const [mahasiswa, setMahasiswa] = useState({});
 
   useEffect(() => {
     const fetchMahasiswa = async () => {
-      const findMahasiswa = await findApiMahasiswa(resolvedParams.nim);
+      const findMahasiswa = await findApiMahasiswa(nim);
       setMahasiswa(findMahasiswa);
     };
-    fetchMahasiswa();
-  }, [resolvedParams.nim]);
+    if (nim) fetchMahasiswa();
+  }, [params]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -23,8 +26,8 @@ const InputNilai = ({ params }) => {
     let formObject = {};
 
     const formData = new FormData(event.target);
-    formData.set("nim", resolvedParams.nim);
-    formData.set("kode_jadwal", resolvedParams.kode);
+    formData.set("nim", nim);
+    formData.set("kode_jadwal", kode);
 
     formData.forEach((value, key) => {
       formObject[key] = value;
@@ -32,8 +35,8 @@ const InputNilai = ({ params }) => {
 
     try {
       const response = await storeApiNilai(formObject);
-      if (response.ok) {
-        alert("Nilai berhasil disimpan");
+      if (response?.data) {
+        alert(response?.data.message || "Nilai berhasil disimpan");
       } else {
         alert("Terjadi kesalahan saat menyimpan nilai");
       }
@@ -47,7 +50,7 @@ const InputNilai = ({ params }) => {
     <App>
       <div className="container mx-auto p-4">
         <div className="flex items-center mb-4">
-          <Link href={"/"}>
+          <Link href={"/kelas/" + kode}>
             <i className="fas fa-arrow-left text-2xl"></i>
           </Link>
         </div>
@@ -59,7 +62,7 @@ const InputNilai = ({ params }) => {
               <input
                 className="w-full p-2 rounded bg-white text-gray-700"
                 type="text"
-                defaultValue={`${params.nim} (${mahasiswa.nama_mahasiswa})`}
+                defaultValue={`${nim} (${mahasiswa?.nama_mahasiswa})`}
                 disabled={true}
               />
             </div>

@@ -5,22 +5,27 @@ import { NextResponse } from "next/server";
 export async function GET(req) {
   const user = await getUser();
 
+  const url = new URL(req.url);
+  const queryNim = url.searchParams.get("nim");
+
+  const nim = queryNim || user.mahasiswa.nim;
+
   const nilai = await prisma.nilai.findMany({
     where: {
-      nim: user.mahasiswa.nim,
+      nim: nim,
     },
   });
 
   const nilai_new = await Promise.all(
     nilai.map(async (nl) => {
-      const nl2 = nl;
+      const nl2 = { ...nl };
       nl2.detail = await prisma.detail_nilai.findMany({
         where: {
           kode_nilai: nl.kode_nilai,
         },
       });
 
-      const jadwal = await Promise.all(
+      await Promise.all(
         nl2.detail.map(async (dn) => {
           dn.jadwal = await prisma.jadwal.findFirst({
             where: {
@@ -28,11 +33,13 @@ export async function GET(req) {
             },
           });
 
-          dn.jadwal.mata_kuliah = await prisma.mata_kuliah.findFirst({
-            where: {
-              kode_mata_kuliah: dn.mata_kuliah,
-            },
-          });
+          if (dn.jadwal) {
+            dn.jadwal.mata_kuliah = await prisma.mata_kuliah.findFirst({
+              where: {
+                kode_mata_kuliah: dn.jadwal.kode_mata_kuliah,
+              },
+            });
+          }
 
           return dn;
         })
@@ -55,6 +62,28 @@ export async function POST(req) {
     nilai_uts,
     nilai_uas,
   } = await req.json();
+
+  const existingNilai = await prisma.nilai.findMany({
+    where: {
+      semester,
+      nim,
+      detail_nilai: {
+        some: {
+          kode_jadwal,
+        },
+      },
+    },
+    include: {
+      detail_nilai: true,
+    },
+  });
+
+  if (existingNilai.length)
+    return NextResponse.json({
+      message: "Gagal, Nilai telah di input sebelumnya!",
+      nilai: existingNilai,
+    });
+
   const lastNilai = await prisma.nilai.findFirst({
     orderBy: {
       kode_nilai: "desc",
@@ -81,7 +110,7 @@ export async function POST(req) {
   const data = {
     semester,
     kode_nilai,
-    nim: nim,
+    // nim,
     ipk: "E",
     mahasiswa: {
       connect: { nim },
@@ -89,12 +118,11 @@ export async function POST(req) {
     detail_nilai: {
       create: [
         {
-          kode_nilai,
           kode_jadwal,
-          nilai_formatif,
-          nilai_tugas,
-          nilai_uts,
-          nilai_uas,
+          nilai_formatif: parseFloat(nilai_formatif),
+          nilai_tugas: parseFloat(nilai_tugas),
+          nilai_uts: parseFloat(nilai_uts),
+          nilai_uas: parseFloat(nilai_uas),
           nilai_akhir: null,
           nilai_huruf: null,
         },
@@ -102,9 +130,15 @@ export async function POST(req) {
     },
   };
 
-  const nilai = await prisma.nilai.create({
-    data,
-  });
+  let nilai;
+  try {
+    nilai = await prisma?.nilai?.create({
+      data,
+    });
+    console.log("Data berhasil ditambahkan:", nilai);
+  } catch (error) {
+    console.error("Error saat menambahkan data:", error);
+  }
 
-  return NextResponse.json({ nilai });
+  return NextResponse.json({ nilai: nilai || {} });
 }
