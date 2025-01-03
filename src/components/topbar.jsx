@@ -13,9 +13,8 @@ export const Topbar = ({ user }) => {
         </button>
         <div>
           <p className="text-white text-lg">Hi</p>
-          <p className="text-white text-sm">Welcome</p>
           <p className="text-white text-sm">
-            {user?.mahasiswa?.nama_mahasiswa || user?.dosen?.nama}
+            Welcome, {user?.mahasiswa?.nama_mahasiswa || user?.dosen?.nama}
           </p>
         </div>
       </div>
@@ -54,10 +53,12 @@ export const Topbar = ({ user }) => {
             <i className="fas fa-calendar mr-3"></i>
             Jadwal
           </Link>
-          <Link href={"/nilai"} className="text-xl p-3 my-3 block">
-            <i className="fas fa-dashboard mr-3"></i>
-            Nilai
-          </Link>
+          {user.role == "mahasiswa" && (
+            <Link href={"/nilai"} className="text-xl p-3 my-3 block">
+              <i className="fas fa-dashboard mr-3"></i>
+              Nilai
+            </Link>
+          )}
         </div>
       </div>
     </>

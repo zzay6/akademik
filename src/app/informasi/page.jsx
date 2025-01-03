@@ -6,6 +6,13 @@ import { useEffect, useState } from "react";
 
 const Informasi = () => {
   const [informasi, setInformasi] = useState([]);
+  const [expanded, setExpanded] = useState([]);
+
+  const toggleExpand = (index) => {
+    setExpanded((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
 
   useEffect(() => {
     (async () => {
@@ -24,7 +31,6 @@ const Informasi = () => {
           </Link>
         </div>
         <h1 className="text-2xl font-bold">Informasi</h1>
-        <p className="text-lg">Nilai Telah di input</p>
         <div className="flex items-center mt-4 mb-4">
           <div className="relative flex-grow">
             <input
@@ -37,17 +43,34 @@ const Informasi = () => {
           <i className="fas fa-filter text-xl ml-4"></i>
         </div>
         <div className="space-y-4">
-          {informasi.map((info, i) => (
-            <div className="p-4 border rounded-lg" key={i}>
-              <div>
-                <div className="flex justify-between">
-                  <p className="font-bold">{info.subject}</p>
-                  <p className="text-gray-500">15 maret 2024</p>
+          {informasi.map((info, i) => {
+            const isExpanded = expanded.includes(i);
+            const maxLength = 100;
+            const shouldTruncate = info.informasi.length > maxLength;
+            return (
+              <div className="p-4 border rounded-lg" key={i}>
+                <div>
+                  <div className="flex justify-between">
+                    <p className="font-bold">{info.subject}</p>
+                    <p className="text-gray-500">15 maret 2024</p>
+                  </div>
+                  <p className="mt-3">
+                    {shouldTruncate && !isExpanded
+                      ? `${info.informasi.slice(0, maxLength)}...`
+                      : info.informasi}
+                  </p>
+                  {shouldTruncate && (
+                    <button
+                      className="mt-2 text-blue-500 hover:underline"
+                      onClick={() => toggleExpand(i)}
+                    >
+                      {isExpanded ? "baca sedikit" : "baca lebih"}
+                    </button>
+                  )}
                 </div>
-                <p className="mt-3">{info.informasi}</p>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </App>

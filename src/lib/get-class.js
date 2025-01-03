@@ -42,8 +42,6 @@ export const getClass = async () => {
   );
 
   kelas.mata_kuliah = mata_kuliah_dosen;
-
-  console.log(kelas);
   return kelas;
 };
 
