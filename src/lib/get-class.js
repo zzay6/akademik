@@ -4,18 +4,19 @@ import { getUser } from "./get-user";
 export const getClass = async () => {
   const user = await getUser();
   const kelas = user.kelas || {};
-  const jadwal =
-    user.role == "mahasiswa"
-      ? await prisma?.jadwal?.findMany({
-          where: {
+  const jadwal = await prisma?.jadwal?.findMany({
+    where:
+      user.role == "mahasiswa"
+        ? {
             kelas: kelas.nama_kelas,
-          },
-        })
-      : await prisma?.jadwal?.findMany({
-          where: {
+          }
+        : {
             dosen: user.dosen.nidn,
           },
-        });
+    include: {
+      kelas_jadwal_kelasTokelas: true,
+    },
+  });
 
   kelas.jadwal = jadwal;
   const mata_kuliah = await prisma.mata_kuliah.findMany({
@@ -45,6 +46,7 @@ export const getClass = async () => {
 };
 
 export const findClass = async (kode) => {
+  const kodeDecode = decodeURIComponent(kode);
   const user = await getUser();
   let kelas;
 
@@ -57,17 +59,16 @@ export const findClass = async (kode) => {
     });
   } else {
     kelas = {};
-    const jadwal = await prisma.jadwal.findFirst({
-      where: {
-        kode_jadwal: kode,
-      },
-    });
-    kelas.mahasiswa = await prisma.mahasiswa.findMany({
-      where: {
-        nama_kelas: jadwal.kel,
-      },
-    });
-  }
+    const mahasiswa = await prisma.$queryRaw`
+      SELECT mahasiswa.*, jadwal.* 
+      FROM mahasiswa 
+      JOIN kelas ON kelas.nama_kelas = mahasiswa.nama_kelas
+      JOIN jadwal ON jadwal.kelas = mahasiswa.nama_kelas
+      WHERE jadwal.dosen = ${user.dosen.nidn}
+        AND jadwal.kelas = ${kodeDecode}
+    `;
 
+    kelas.mahasiswa = mahasiswa;
+  }
   return kelas;
 };

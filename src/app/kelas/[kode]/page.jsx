@@ -4,8 +4,9 @@ import { getUser } from "@/lib/get-user";
 import Link from "next/link";
 
 const Mahasiswa = async ({ params }) => {
+  const { kode } = await params;
   const user = await getUser();
-  const kelas = await findClass();
+  const kelas = await findClass(kode);
 
   return (
     <App>
@@ -25,7 +26,7 @@ const Mahasiswa = async ({ params }) => {
               <span>{mhs.nama_mahasiswa}</span>
               {user.role == "dosen" && (
                 <Link
-                  href={params?.kode + "/nilai?nim=" + mhs?.nim}
+                  href={kode + "/nilai/" + mhs.kode_jadwal + "?nim=" + mhs?.nim}
                   className="bg-pink-600 text-white px-4 py-2 rounded-full text-sm"
                 >
                   Nilai

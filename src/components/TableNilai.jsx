@@ -1,9 +1,12 @@
-const TableNilai = ({ detailNilai }) => {
+const TableNilai = ({ detailNilai, isCanDelete, onDelete }) => {
   return (
     <table className="min-w-full border-collapse border border-gray-400 whitespace-nowrap">
       <thead>
         <tr>
           <th className="border border-gray-400 px-4 py-2">No</th>
+          {isCanDelete && (
+            <th className="border border-gray-400 px-4 py-2">Aksi</th>
+          )}
           <th className="border border-gray-400 px-4 py-2">Mata Kuliah</th>
           <th className="border border-gray-400 px-4 py-2">Nilai Tugas</th>
           <th className="border border-gray-400 px-4 py-2">Nilai Formatif</th>
@@ -31,6 +34,16 @@ const TableNilai = ({ detailNilai }) => {
           return (
             <tr key={i}>
               <td className="border border-gray-400 px-4 py-2">1</td>
+              {isCanDelete && (
+                <td className="border border-gray-400 px-4 py-2">
+                  <button
+                    className="text-white bg-red-500 text-sm py-1 px-2 rounded"
+                    onClick={(e) => onDelete(dn.kode_nilai)}
+                  >
+                    <i className="fas fa-trash"></i>{" "}
+                  </button>
+                </td>
+              )}
               <td className="border border-gray-400 px-4 py-2">
                 {dn.jadwal?.mata_kuliah?.nama}
               </td>

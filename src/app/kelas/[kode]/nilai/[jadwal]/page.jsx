@@ -1,6 +1,6 @@
 "use client";
 import { App } from "@/layout/app";
-import { getApiNilai, getApiSemester } from "@/lib/api/nilai";
+import { deleteApiNilai, getApiNilai, getApiSemester } from "@/lib/api/nilai";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import TableNilai from "@/components/TableNilai";
@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { useParams } from "next/navigation";
 
 const Nilai = () => {
-  const { kode } = useParams();
+  const { kode, jadwal } = useParams();
   const params = useSearchParams();
   const nim = params.get("nim");
   const [semester, setSemester] = useState([]);
@@ -29,10 +29,18 @@ const Nilai = () => {
     const detail =
       nilai.find((nl) => nl.semester == selectedSemester)?.detail || [];
 
-    const filterNilai = detail.filter((d) => d.kode_jadwal == kode);
-    console.log(filterNilai);
+    const filterNilai = detail.filter((d) => d.kode_jadwal == jadwal);
+
     setDetailNilai(filterNilai);
   }, [selectedSemester]);
+
+  const onDelete = async (kode_nilai) => {
+    const result = await deleteApiNilai(kode_nilai);
+    if (result.status == 200) {
+      const getNilai = await getApiNilai(nim);
+      setNilai(getNilai);
+    }
+  };
 
   return (
     <App>
@@ -47,7 +55,7 @@ const Nilai = () => {
           <h1 className="text-4xl font-bold mb-3 mt-3">Nilai</h1>
           <div>
             <Link
-              href={"input-nilai?nim=" + nim}
+              href={"../input-nilai/" + jadwal + "?nim=" + nim}
               className="bg-pink-600 text-white px-4 py-2 rounded text-sm"
             >
               <i className="fas fa-plus mr-3"></i>
@@ -74,7 +82,11 @@ const Nilai = () => {
           Ambil Data
         </button>
         <div className="overflow-x-auto mt-4">
-          <TableNilai detailNilai={detailNilai} />
+          <TableNilai
+            detailNilai={detailNilai}
+            isCanDelete={true}
+            onDelete={onDelete}
+          />
         </div>
       </div>
     </App>

@@ -21,3 +21,11 @@ export const storeApiNilai = async (formData) => {
   const result = await axios.post("/api/nilai", formData);
   return result;
 };
+
+export const deleteApiNilai = async (kode_nilai) => {
+  const result = await axios.post("/api/nilai", {
+    kode_nilai,
+    action: "delete",
+  });
+  return result;
+};

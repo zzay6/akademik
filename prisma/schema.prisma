@@ -30,6 +30,7 @@ model dosen {
   id_pengguna                Int?
   pengguna                   pengguna? @relation(fields: [id_pengguna], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_dosen_pengguna")
   jadwal_jadwal_dosenTodosen jadwal[]  @relation("jadwal_dosenTodosen")
+  kelas                      kelas[]
 
   @@index([id_pengguna], map: "fk_dosen_pengguna")
 }
@@ -50,6 +51,7 @@ model jadwal {
   ruang                                       String         @db.Char(5)
   dosen                                       String         @db.Char(10)
   detail_nilai                                detail_nilai[]
+  kelas_jadwal_kelasTokelas                   kelas          @relation("jadwal_kelasTokelas", fields: [kelas], references: [nama_kelas], onUpdate: Restrict, map: "fk_jadwal_kelas")
   mata_kuliah_jadwal_mata_kuliahTomata_kuliah mata_kuliah    @relation("jadwal_mata_kuliahTomata_kuliah", fields: [mata_kuliah], references: [kode_mata_kuliah], onUpdate: Restrict, map: "jadwal_ibfk_1")
   ruang_jadwal_ruangToruang                   ruang          @relation("jadwal_ruangToruang", fields: [ruang], references: [kode_ruang], onUpdate: Restrict, map: "jadwal_ibfk_2")
   dosen_jadwal_dosenTodosen                   dosen          @relation("jadwal_dosenTodosen", fields: [dosen], references: [nidn], onUpdate: Restrict, map: "jadwal_ibfk_3")
@@ -57,13 +59,17 @@ model jadwal {
   @@index([dosen], map: "dosen")
   @@index([mata_kuliah], map: "mata_kuliah")
   @@index([ruang], map: "ruang")
+  @@index([kelas], map: "fk_jadwal_kelas")
 }
 
 model kelas {
-  nama_kelas String @id @unique(map: "nama_kelas") @db.VarChar(10)
-  kode_prodi String @db.VarChar(5)
-  nidn       String @db.Char(10)
-  prodi      prodi  @relation(fields: [kode_prodi], references: [kode_prodi], onUpdate: Restrict, map: "FK_kode_prodi")
+  nama_kelas                 String      @id @unique(map: "nama_kelas") @db.VarChar(10)
+  kode_prodi                 String      @db.VarChar(5)
+  nidn                       String      @db.Char(10)
+  jadwal_jadwal_kelasTokelas jadwal[]    @relation("jadwal_kelasTokelas")
+  prodi                      prodi       @relation(fields: [kode_prodi], references: [kode_prodi], onUpdate: Restrict, map: "FK_kode_prodi")
+  dosen                      dosen       @relation(fields: [nidn], references: [nidn], onUpdate: Restrict, map: "kelas_ibfk_1")
+  mahasiswa                  mahasiswa[]
 
   @@index([kode_prodi], map: "FK_kode_prodi")
   @@index([nidn], map: "NIDN")
@@ -74,10 +80,12 @@ model mahasiswa {
   nim            String    @id @db.Char(10)
   nama_kelas     String    @db.VarChar(10)
   id_pengguna    Int?
+  kelas          kelas     @relation(fields: [nama_kelas], references: [nama_kelas], onUpdate: Restrict, map: "fk_mahasiswa_nama_kelas")
   pengguna       pengguna? @relation(fields: [id_pengguna], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "fk_mahasiswa_pengguna")
   nilai          nilai[]
 
   @@index([id_pengguna], map: "fk_mahasiswa_pengguna")
+  @@index([nama_kelas], map: "fk_mahasiswa_nama_kelas")
 }
 
 model mata_kuliah {

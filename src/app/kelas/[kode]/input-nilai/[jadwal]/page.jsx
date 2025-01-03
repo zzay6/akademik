@@ -7,7 +7,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const InputNilai = () => {
-  const { kode } = useParams();
+  const { kode, jadwal } = useParams();
   const params = useSearchParams();
   const nim = params.get("nim");
   const [mahasiswa, setMahasiswa] = useState({});
@@ -27,7 +27,7 @@ const InputNilai = () => {
 
     const formData = new FormData(event.target);
     formData.set("nim", nim);
-    formData.set("kode_jadwal", kode);
+    formData.set("kode_jadwal", jadwal);
 
     formData.forEach((value, key) => {
       formObject[key] = value;
@@ -50,7 +50,7 @@ const InputNilai = () => {
     <App>
       <div className="container mx-auto p-4">
         <div className="flex items-center mb-4">
-          <Link href={"/kelas/" + kode}>
+          <Link href={"/kelas/" + kode + '/'}>
             <i className="fas fa-arrow-left text-2xl"></i>
           </Link>
         </div>

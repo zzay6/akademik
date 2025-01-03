@@ -23,7 +23,7 @@ const Home = async () => {
               "/kelas/" +
               kelas.jadwal.find(
                 (candidate) => candidate.mata_kuliah === matkul.kode_mata_kuliah
-              ).kode_jadwal
+              )?.kelas_jadwal_kelasTokelas?.nama_kelas
             }
             key={i}
             className="bg-purple-200 rounded-lg p-4 flex items-center block"
