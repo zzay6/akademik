@@ -25,27 +25,25 @@ const Biodata = async () => {
           <div className="grid grid-cols-3 gap-4 items-center">
             <span>Nama Lengkap</span>
             <span className="text-center">:</span>
-            <span className="text-right">
-              {user?.mahasiswa?.nama_mahasiswa}
-            </span>
+            <span className="text-left">{user?.mahasiswa?.nama_mahasiswa}</span>
 
             <span>NIM</span>
             <span className="text-center">:</span>
-            <span className="text-right">{user?.mahasiswa?.nim || "-"}</span>
+            <span className="text-left">{user?.mahasiswa?.nim || "-"}</span>
 
             <span>Kelas</span>
             <span className="text-center">:</span>
-            <span className="text-right">
+            <span className="text-left">
               {user?.mahasiswa?.nama_kelas || "-"}
             </span>
 
             <span>Program Studi</span>
             <span className="text-center">:</span>
-            <span className="text-right">{user?.prodi?.nama_prodi || "-"}</span>
+            <span className="text-left">{user?.prodi?.nama_prodi || "-"}</span>
 
             <span>Program Kuliah</span>
             <span className="text-center">:</span>
-            <span className="text-right">{program}</span>
+            <span className="text-left">{program}</span>
           </div>
         </div>
         <button className="w-full bg-purple-700 text-white py-2 rounded-lg">

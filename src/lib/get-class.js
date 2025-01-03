@@ -4,6 +4,7 @@ import { getUser } from "./get-user";
 export const getClass = async () => {
   const user = await getUser();
   const kelas = user.kelas || {};
+
   const jadwal = await prisma?.jadwal?.findMany({
     where:
       user.role == "mahasiswa"
@@ -15,9 +16,9 @@ export const getClass = async () => {
           },
     include: {
       kelas_jadwal_kelasTokelas: true,
+      dosen_jadwal_dosenTodosen: true,
     },
   });
-
   kelas.jadwal = jadwal;
   const mata_kuliah = await prisma.mata_kuliah.findMany({
     where: {
@@ -40,8 +41,9 @@ export const getClass = async () => {
     })
   );
 
-  kelas.mata_kuliah = await mata_kuliah_dosen;
+  kelas.mata_kuliah = mata_kuliah_dosen;
 
+  console.log(kelas);
   return kelas;
 };
 

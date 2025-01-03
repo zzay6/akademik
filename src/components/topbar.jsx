@@ -14,7 +14,9 @@ export const Topbar = ({ user }) => {
         <div>
           <p className="text-white text-lg">Hi</p>
           <p className="text-white text-sm">Welcome</p>
-          <p className="text-white text-sm">{user?.mahasiswa?.nama_mahasiswa}</p>
+          <p className="text-white text-sm">
+            {user?.mahasiswa?.nama_mahasiswa || user?.dosen?.nama}
+          </p>
         </div>
       </div>
       <div
