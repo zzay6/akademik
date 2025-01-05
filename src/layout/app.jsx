@@ -3,34 +3,51 @@ import { Topbar } from "@/components/topbar";
 import { Navbar } from "@/components/navbar";
 import { getApiUser } from "@/lib/api/user";
 import { useEffect, useState } from "react";
+import Alert from "@/components/alert";
+import Loading from "@/components/loading";
 
-export const App = ({ children, hideTopBar }) => {
+export const App = ({
+  children,
+  hideTopBar,
+  alertMessage,
+  alertClose,
+  alertType,
+  loading,
+}) => {
   const [user, setUser] = useState({});
+  const [loadingUser, setLoadingUser] = useState(true);
 
-  useEffect((e) => {
-    try {
-      const storedUser = localStorage.getItem("user");
-      const parsedUser = storedUser ? JSON.parse(storedUser) : {};
-      setUser(parsedUser);
-      const fetchUser = async () => {
-        try {
-          const result = await getApiUser();
-          const userFromApi = result?.user || {};
-          localStorage.setItem("user", JSON.stringify(userFromApi));
-          setUser(userFromApi);
-        } catch (apiError) {
-          console.error("Error fetching user data from API:", apiError);
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const storedUser = localStorage.getItem("user");
+        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+
+        if (parsedUser) {
+          setUser(parsedUser);
+          setLoadingUser(false);
+          return;
         }
-      };
 
-      if (!hideTopBar) {
-        fetchUser();
+        const result = await getApiUser();
+        const userFromApi = result?.user || {};
+        localStorage.setItem("user", JSON.stringify(userFromApi));
+        setUser(userFromApi);
+        setLoadingUser(false);
+      } catch (apiError) {
+        console.error("Error fetching user data from API:", apiError);
+        setUser({});
+        setLoadingUser(false);
       }
-    } catch (error) {
-      console.error("Invalid JSON in localStorage:", error);
-      setUser({});
-      localStorage.removeItem("user");
-    }
+    };
+
+    if (!hideTopBar) fetchUser();
+    setLoadingUser(false);
+
+    return () => {
+      setUser(null);
+      setLoadingUser(true);
+    };
   }, []);
 
   return (
@@ -44,6 +61,14 @@ export const App = ({ children, hideTopBar }) => {
       className="bg-gray-50 text-black"
     >
       {!hideTopBar && <Topbar user={user} />}
+      {alertMessage && (
+        <Alert
+          handleClose={alertClose}
+          message={alertMessage}
+          type={alertType}
+        />
+      )}
+      {(loading || loadingUser) && <Loading />}
       {children}
       {!hideTopBar && <Navbar />}
     </div>

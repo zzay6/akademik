@@ -1,35 +1,62 @@
 "use client";
-
 import { App } from "@/layout/app";
+import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const LoginMahasiswa = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [resMessage, setResMessage] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
 
-    const res = await fetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify({
+    try {
+      const response = await axios.post("/api/login", {
         role: "mahasiswa",
         username: event.target.username.value,
         password: event.target.password.value,
-      }),
-    });
+      });
 
-    if (res.ok) {
-      const { token } = await res.json();
-      document.cookie = `token=${token}; path=/`;
-      router.push("/");
-    } else {
-      alert("Login failed!");
+      const { data, success, message } = response.data;
+
+      if (success) {
+        const { token } = data;
+        document.cookie = `token=${token}; path=/`;
+
+        setResMessage(message);
+        setSuccess(true);
+        setTimeout(() => {
+          router.push("/");
+        }, 1000);
+      } else {
+        setResMessage(message || "Login failed!");
+        setSuccess(false);
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error during login:", error);
+      setResMessage(
+        error.response.data.message ||
+          "Terjadi kesalahan saat login. Silakan coba lagi."
+      );
+      setSuccess(false);
     }
   };
 
   return (
-    <App hideTopBar={true}>
+    <App
+      hideTopBar={true}
+      alertClose={(e) => setResMessage("")}
+      alertMessage={resMessage}
+      alertType={success ? "success" : "error"}
+      loading={loading}
+    >
       <div className="p-4">
         <div className="flex items-center mb-4">
           <Link href={"/login"}>

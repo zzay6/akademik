@@ -7,7 +7,15 @@ import { useEffect, useState } from "react";
 
 const Profile = () => {
   const [user, setUser] = useState({});
+  const [message, setMessage] = useState("");
   const router = useRouter();
+
+  const handleLogout = () => {
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    localStorage.removeItem("user");
+    setMessage("Logout berhasil!");
+    setTimeout(() => router.push("/login"), 1200);
+  };
 
   useEffect(() => {
     (async () => {
@@ -16,7 +24,11 @@ const Profile = () => {
     })();
   }, []);
   return (
-    <App>
+    <App
+      alertClose={(e) => setMessage("")}
+      alertMessage={message}
+      alertType={"success"}
+    >
       <div className="flex flex-col items-center w-full px-4 space-y-4 mt-8">
         {user.role == "mahasiswa" && (
           <Link href={"/profile/biodata"} className="w-full">
@@ -32,11 +44,7 @@ const Profile = () => {
         </button>
         <button
           className="w-full bg-gray-200 p-4 rounded-lg text-black flex items-center"
-          onClick={(e) => {
-            document.cookie =
-              "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            router.push("/login");
-          }}
+          onClick={handleLogout}
         >
           <i className="fas fa-sign-out-alt text-xl mr-4"></i>
           <span className="text-lg">Logout</span>

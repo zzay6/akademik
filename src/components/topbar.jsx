@@ -53,7 +53,7 @@ export const Topbar = ({ user }) => {
             <i className="fas fa-calendar mr-3"></i>
             Jadwal
           </Link>
-          {user.role == "mahasiswa" && (
+          {user?.role == "mahasiswa" && (
             <Link href={"/nilai"} className="text-xl p-3 my-3 block">
               <i className="fas fa-dashboard mr-3"></i>
               Nilai

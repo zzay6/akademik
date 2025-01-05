@@ -6,7 +6,19 @@ export const getApiSemester = async (nim = null) => {
     ? await axios.get("/api/nilai?nim=" + nim)
     : await axios.get("/api/nilai");
   const data = result.data.nilai;
-  return data.map((d) => d.semester);
+  const seenSemesters = new Set();
+
+  const uniqueSemesters = data
+    .filter((d) => {
+      if (seenSemesters.has(d.semester)) {
+        return false;
+      }
+      seenSemesters.add(d.semester);
+      return true;
+    })
+    .map((d) => d.semester);
+
+  return uniqueSemesters;
 };
 
 export const getApiNilai = async (nim = null) => {

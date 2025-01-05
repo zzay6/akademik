@@ -26,7 +26,11 @@ export async function POST(req) {
     });
   }
 
-  if (!loginAs) throw new Error("User not found or invalid role");
+  if (!loginAs)
+    return NextResponse.json(
+      { message: "Role tidak valid, Akun bukan " + role, success: false },
+      { status: 403 }
+    );
 
   const pengguna = await prisma.pengguna?.findFirst({
     where: {
@@ -37,7 +41,7 @@ export async function POST(req) {
 
   if (!pengguna || !bcrypt.compareSync(password, pengguna.password)) {
     return NextResponse.json(
-      { error: "Credentials tidak valid" },
+      { message: "Credentials tidak valid", success: false },
       { status: 401 }
     );
   }
@@ -50,5 +54,9 @@ export async function POST(req) {
     }
   );
 
-  return NextResponse.json({ token });
+  return NextResponse.json({
+    message: "Login sucessfully",
+    success: true,
+    data: { token },
+  });
 }

@@ -2,20 +2,25 @@
 import { App } from "@/layout/app";
 import { findApiMahasiswa } from "@/lib/api/mahasiswa";
 import { storeApiNilai } from "@/lib/api/nilai";
+import axios from "axios";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const InputNilai = () => {
+  const router = useRouter();
   const { kode, jadwal } = useParams();
   const params = useSearchParams();
   const nim = params.get("nim");
   const [mahasiswa, setMahasiswa] = useState({});
+  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchMahasiswa = async () => {
       const findMahasiswa = await findApiMahasiswa(nim);
       setMahasiswa(findMahasiswa);
+      console.log(findMahasiswa);
     };
     if (nim) fetchMahasiswa();
   }, [params]);
@@ -34,23 +39,44 @@ const InputNilai = () => {
     });
 
     try {
-      const response = await storeApiNilai(formObject);
-      if (response?.data) {
-        alert(response?.data.message || "Nilai berhasil disimpan");
+      const response = await axios.post("/api/nilai", formObject, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const { data, message, success } = response?.data || {};
+
+      if (success) {
+        setSuccess(true);
+        setMessage(message || "Nilai berhasil disimpan");
+        setTimeout(
+          () => router.push("../nilai/" + jadwal + "?nim=" + nim),
+          1200
+        );
       } else {
-        alert("Terjadi kesalahan saat menyimpan nilai");
+        setSuccess(false);
+        setMessage("Terjadi kesalahan saat menyimpan nilai");
       }
     } catch (error) {
+      setSuccess(false);
       console.error("Error submitting data:", error);
-      alert("Terjadi kesalahan pada server");
+
+      const errorMessage =
+        error.response?.data?.message || "Terjadi kesalahan pada server";
+      setMessage(errorMessage);
     }
   };
 
   return (
-    <App>
+    <App
+      alertClose={(e) => setMessage("")}
+      alertMessage={message}
+      alertType={success ? "success" : "error"}
+    >
       <div className="container mx-auto p-4">
         <div className="flex items-center mb-4">
-          <Link href={"/kelas/" + kode + '/'}>
+          <Link href={"../nilai/" + jadwal + "?nim=" + nim}>
             <i className="fas fa-arrow-left text-2xl"></i>
           </Link>
         </div>
@@ -62,7 +88,7 @@ const InputNilai = () => {
               <input
                 className="w-full p-2 rounded bg-white text-gray-700"
                 type="text"
-                defaultValue={`${nim} (${mahasiswa?.nama_mahasiswa})`}
+                value={`${nim} (${mahasiswa.nama_mahasiswa})`}
                 disabled={true}
               />
             </div>

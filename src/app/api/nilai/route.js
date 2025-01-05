@@ -36,7 +36,7 @@ export async function GET(req) {
           if (dn.jadwal) {
             dn.jadwal.mata_kuliah = await prisma.mata_kuliah.findFirst({
               where: {
-                kode_mata_kuliah: dn.jadwal.kode_mata_kuliah,
+                kode_mata_kuliah: dn.jadwal.mata_kuliah,
               },
             });
           }
@@ -66,18 +66,21 @@ export async function POST(req) {
   } = await req.json();
 
   if (action == "delete") {
-    prisma.detail_nilai.delete({
+    await prisma.detail_nilai.deleteMany({
       where: {
         kode_nilai,
       },
     });
-    prisma.nilai.delete({
+    await prisma.nilai.delete({
       where: {
         kode_nilai,
       },
     });
 
-    return NextResponse.json({ message: "Berhasil hapus nilai" });
+    return NextResponse.json({
+      message: "Berhasil hapus nilai",
+      success: true,
+    });
   } else {
     const existingNilai = await prisma.nilai.findMany({
       where: {
@@ -95,10 +98,16 @@ export async function POST(req) {
     });
 
     if (existingNilai.length)
-      return NextResponse.json({
-        message: "Gagal, Nilai telah di input sebelumnya!",
-        nilai: existingNilai,
-      });
+      return NextResponse.json(
+        {
+          message: "Gagal, Nilai telah di input sebelumnya!",
+          success: false,
+          data: { nilai: existingNilai },
+        },
+        {
+          status: 400,
+        }
+      );
 
     const lastNilai = await prisma.nilai.findFirst({
       orderBy: {
@@ -156,6 +165,10 @@ export async function POST(req) {
       console.error("Error saat menambahkan data:", error);
     }
 
-    return NextResponse.json({ nilai: nilai || {} });
+    return NextResponse.json({
+      message: "Nilai berhasil di input",
+      data: { nilai: nilai },
+      success: true || {},
+    });
   }
 }

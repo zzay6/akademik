@@ -1,4 +1,5 @@
-const TableNilai = ({ detailNilai, isCanDelete, onDelete }) => {
+const TableNilai = ({ detailNilai, isCanDelete, onDelete, ipk, semester }) => {
+  console.log(ipk);
   return (
     <table className="min-w-full border-collapse border border-gray-400 whitespace-nowrap">
       <thead>
@@ -19,18 +20,6 @@ const TableNilai = ({ detailNilai, isCanDelete, onDelete }) => {
       </thead>
       <tbody>
         {detailNilai?.map((dn, i) => {
-          const nilai_akhir =
-            (dn.nilai_tugas + dn.nilai_formatif + dn.nilai_uts + dn.nilai_uas) /
-            4;
-
-          const grade =
-            nilai_akhir >= 90
-              ? "A"
-              : nilai_akhir >= 80
-              ? "B"
-              : nilai_akhir >= 70
-              ? "C"
-              : "D";
           return (
             <tr key={i}>
               <td className="border border-gray-400 px-4 py-2">1</td>
@@ -60,14 +49,46 @@ const TableNilai = ({ detailNilai, isCanDelete, onDelete }) => {
                 {dn.nilai_uas}
               </td>
               <td className="border border-gray-400 px-4 py-2">
-                {nilai_akhir}
+                {dn.nilai_akhir}
               </td>
-              <td className="border border-gray-400 px-4 py-2">{grade}</td>
+              <td className="border border-gray-400 px-4 py-2">
+                {dn.nilai_huruf}
+              </td>
               <td className="border border-gray-400 px-4 py-2">3</td>
             </tr>
           );
         })}
       </tbody>
+      <tfoot>
+        <tr>
+          <td
+            colSpan={2}
+            className="border border-gray-400 px-4 py-2 font-bold text-right"
+          >
+            Semester
+          </td>
+          <td
+            colSpan={isCanDelete ? 8 : 7}
+            className="border border-gray-400 px-4 py-2 font-bold"
+          >
+            {semester}
+          </td>
+        </tr>
+        <tr>
+          <td
+            colSpan={2}
+            className="border border-gray-400 px-4 py-2 font-bold text-right"
+          >
+            IPK
+          </td>
+          <td
+            colSpan={isCanDelete ? 8 : 7}
+            className="border border-gray-400 px-4 py-2 font-bold"
+          >
+            {ipk}
+          </td>
+        </tr>
+      </tfoot>
     </table>
   );
 };

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import TableNilai from "@/components/TableNilai";
 import { useSearchParams } from "next/navigation";
 import { useParams } from "next/navigation";
+import axios from "axios";
 
 const Nilai = () => {
   const { kode, jadwal } = useParams();
@@ -15,6 +16,10 @@ const Nilai = () => {
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [nilai, setNilai] = useState([]);
   const [detailNilai, setDetailNilai] = useState([]);
+  const [success, setSuccess] = useState(false);
+  const [message, setMessage] = useState("");
+  const [ipk, setIpk] = useState(null);
+  const [nilai2, setNilai2] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -26,24 +31,50 @@ const Nilai = () => {
   }, []);
 
   useEffect(() => {
-    const detail =
-      nilai.find((nl) => nl.semester == selectedSemester)?.detail || [];
+    const nilaiSemester = nilai.filter((n) => n.semester === selectedSemester);
+    const detail = nilaiSemester.flatMap((n) => n.detail);
 
-    const filterNilai = detail.filter((d) => d.kode_jadwal == jadwal);
+    const filterNilai = detail.filter((d) => d?.kode_jadwal == jadwal);
 
     setDetailNilai(filterNilai);
-  }, [selectedSemester]);
+    setIpk(nilaiSemester[0]?.ipk);
+    setNilai2(nilaiSemester[0]);
+  }, [nilai, selectedSemester]);
 
   const onDelete = async (kode_nilai) => {
-    const result = await deleteApiNilai(kode_nilai);
-    if (result.status == 200) {
-      const getNilai = await getApiNilai(nim);
-      setNilai(getNilai);
+    try {
+      const result = await axios.post(`/api/nilai`, {
+        kode_nilai,
+        action: "delete",
+      });
+
+      if (result.status === 200) {
+        setSuccess(true);
+        setMessage("Nilai berhasil dihapus");
+
+        const getNilai = await getApiNilai(nim);
+        setNilai(getNilai);
+      } else {
+        setSuccess(false);
+        setMessage("Gagal menghapus nilai");
+      }
+    } catch (error) {
+      setSuccess(false);
+      console.error("Error deleting nilai:", error);
+
+      const errorMessage =
+        error.response?.data?.message ||
+        "Terjadi kesalahan saat menghapus nilai";
+      setMessage(errorMessage);
     }
   };
 
   return (
-    <App>
+    <App
+      alertClose={(e) => setMessage("")}
+      alertMessage={message}
+      alertType={success ? "success" : "error"}
+    >
       <div className="container mx-auto p-4">
         <div className="flex items-center mb-4">
           <Link href={"/"}>
@@ -78,14 +109,13 @@ const Nilai = () => {
             ))}
           </select>
         </div>
-        <button className="w-full bg-purple-700 text-white py-2 rounded-lg">
-          Ambil Data
-        </button>
         <div className="overflow-x-auto mt-4">
           <TableNilai
             detailNilai={detailNilai}
             isCanDelete={true}
             onDelete={onDelete}
+            ipk={ipk}
+            semester={nilai2?.semester}
           />
         </div>
       </div>
