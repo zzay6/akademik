@@ -7,10 +7,16 @@ const TableNilai = ({ detailNilai, isCanDelete, onDelete, ipk, semester }) => {
             position: "absolute",
             width: "100%",
             maxWidth: "430px",
+            zIndex: 9,
           }}
-          className="flex justify-center items-center pt-14"
+          className="flex justify-center items-center pt-12"
         >
-          <h6 style={{ fontWeight: 500 }}>Pilih semester dulu</h6>
+          <h6
+            style={{ fontWeight: 500 }}
+            className="bg-yellow-100 py-2 w-full text-center"
+          >
+            Pilih semester dulu
+          </h6>
         </div>
       )}
       <table
@@ -37,7 +43,7 @@ const TableNilai = ({ detailNilai, isCanDelete, onDelete, ipk, semester }) => {
         </thead>
         <tbody>
           {detailNilai?.map((dn, i) => {
-            console.log(dn)
+            console.log(dn);
             if (dn?.kode_nilai) {
               return (
                 <tr key={i}>
