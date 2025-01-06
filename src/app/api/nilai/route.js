@@ -114,7 +114,6 @@ export async function POST(req) {
 
       // Jika detail_nilai belum ada untuk kode_jadwal tersebut
       try {
-        console.log("KODE JADWAL!!", kode_jadwal);
         const newDetailNilai = await prisma.detail_nilai.create({
           data: {
             nilai: {
@@ -131,8 +130,6 @@ export async function POST(req) {
             nilai_huruf: null,
           },
         });
-
-        console.log("Detail nilai berhasil ditambahkan:", newDetailNilai);
 
         return NextResponse.json(
           {
@@ -199,8 +196,6 @@ export async function POST(req) {
       const newNilai = await prisma.nilai.create({
         data,
       });
-
-      console.log("Data berhasil ditambahkan:", newNilai);
 
       return NextResponse.json(
         {

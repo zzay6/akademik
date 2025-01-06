@@ -4,10 +4,11 @@ const TableNilai = ({ detailNilai, isCanDelete, onDelete, ipk, semester }) => {
       {!semester && (
         <div
           style={{
-            position: "absolute",
+            position: "relative",
             width: "100%",
             maxWidth: "430px",
             zIndex: 9,
+            marginBottom: '-70px'
           }}
           className="flex justify-center items-center pt-12"
         >
@@ -43,7 +44,6 @@ const TableNilai = ({ detailNilai, isCanDelete, onDelete, ipk, semester }) => {
         </thead>
         <tbody>
           {detailNilai?.map((dn, i) => {
-            console.log(dn);
             if (dn?.kode_nilai) {
               return (
                 <tr key={i}>
