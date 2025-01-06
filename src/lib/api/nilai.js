@@ -1,11 +1,7 @@
 "use client";
 import axios from "axios";
 
-export const getApiSemester = async (nim = null) => {
-  const result = nim
-    ? await axios.get("/api/nilai?nim=" + nim)
-    : await axios.get("/api/nilai");
-  const data = result.data.nilai;
+export const getApiSemester = async (data) => {
   const seenSemesters = new Set();
 
   const uniqueSemesters = data

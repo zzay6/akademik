@@ -10,21 +10,25 @@ const Nilai = () => {
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [nilai, setNilai] = useState([]);
   const [detailNilai, setDetailNilai] = useState([]);
+  const [ipk, setIpk] = useState(null);
+  const [nilai2, setNilai2] = useState(null);
 
   useEffect(() => {
     (async () => {
-      const getSemester = await getApiSemester();
-      setSemester(getSemester);
-
       const getNilai = await getApiNilai();
       setNilai(getNilai);
+      const getSemester = await getApiSemester(getNilai);
+      setSemester(getSemester);
     })();
   }, []);
 
   useEffect(() => {
-    const detail =
-      nilai.find((nl) => nl.semester == selectedSemester)?.detail || [];
+    const nilaiSemester = nilai.filter((n) => n.semester === selectedSemester);
+    const detail = nilaiSemester.flatMap((n) => n.detail);
+
     setDetailNilai(detail);
+    setIpk(nilaiSemester[0]?.ipk);
+    setNilai2(nilaiSemester[0]);
   }, [selectedSemester]);
 
   return (
@@ -55,7 +59,11 @@ const Nilai = () => {
           Ambil Data
         </button>
         <div className="overflow-x-auto mt-4">
-          <TableNilai detailNilai={detailNilai} />
+          <TableNilai
+            detailNilai={detailNilai}
+            ipk={ipk}
+            semester={nilai2?.semester}
+          />
         </div>
       </div>
     </App>

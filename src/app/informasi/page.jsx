@@ -17,7 +17,6 @@ const Informasi = () => {
   useEffect(() => {
     (async () => {
       const getInformasi = await getApiInformasi();
-      console.log(getInformasi);
       setInformasi(getInformasi);
     })();
   }, []);

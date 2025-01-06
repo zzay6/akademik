@@ -1,5 +1,4 @@
 const TableNilai = ({ detailNilai, isCanDelete, onDelete, ipk, semester }) => {
-  console.log(ipk);
   return (
     <table className="min-w-full border-collapse border border-gray-400 whitespace-nowrap">
       <thead>

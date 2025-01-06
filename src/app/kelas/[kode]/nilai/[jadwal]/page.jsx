@@ -23,10 +23,10 @@ const Nilai = () => {
 
   useEffect(() => {
     (async () => {
-      const getSemester = await getApiSemester(nim);
-      setSemester(getSemester);
       const getNilai = await getApiNilai(nim);
       setNilai(getNilai);
+      const getSemester = await getApiSemester(getNilai);
+      setSemester(getSemester);
     })();
   }, []);
 

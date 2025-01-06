@@ -20,7 +20,6 @@ const InputNilai = () => {
     const fetchMahasiswa = async () => {
       const findMahasiswa = await findApiMahasiswa(nim);
       setMahasiswa(findMahasiswa);
-      console.log(findMahasiswa);
     };
     if (nim) fetchMahasiswa();
   }, [params]);
