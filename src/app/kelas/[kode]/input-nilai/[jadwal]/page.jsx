@@ -15,6 +15,7 @@ const InputNilai = () => {
   const [mahasiswa, setMahasiswa] = useState({});
   const [success, setSuccess] = useState(false);
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchMahasiswa = async () => {
@@ -26,6 +27,8 @@ const InputNilai = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    setLoading(true);
 
     let formObject = {};
 
@@ -46,12 +49,14 @@ const InputNilai = () => {
 
       const { data, message, success } = response?.data || {};
 
+      setLoading(false);
+
       if (success) {
         setSuccess(true);
         setMessage(message || "Nilai berhasil disimpan");
         setTimeout(
           () => router.push("../nilai/" + jadwal + "?nim=" + nim),
-          1200
+          1000
         );
       } else {
         setSuccess(false);
@@ -72,6 +77,7 @@ const InputNilai = () => {
       alertClose={(e) => setMessage("")}
       alertMessage={message}
       alertType={success ? "success" : "error"}
+      loading={loading}
     >
       <div className="container mx-auto p-4">
         <div className="flex items-center mb-4">
